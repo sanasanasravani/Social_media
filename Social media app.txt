@@ -1,0 +1,83 @@
+render.yaml
+
+services:
+
+type: web
+name: social-media-app
+env: python
+plan: free
+buildCommand: |
+chmod +x build.sh
+./build.sh
+startCommand: gunicorn social_media.wsgi:application
+autoDeploy: true
+
+envVars:
+
+key: SECRET_KEY
+generateValue: true
+
+key: DEBUG
+value: "False"
+
+key: DATABASE_URL
+fromDatabase:
+name: social-media-db
+property: connectionString
+
+key: WEB_CONCURRENCY
+value: "4"
+
+
+
+databases:
+
+name: social-media-db
+databaseName: social_media
+user: social_media_user
+plan: free
+
+
+build.sh
+
+#!/usr/bin/env bash
+set -o errexit
+
+pip install --upgrade pip
+pip install -r requirements.txt
+
+python manage.py makemigrations --noinput
+python manage.py migrate --noinput
+python manage.py collectstatic --noinput
+// vercel.json
+
+{
+"version": 2,
+"builds": [
+{
+"src": "manage.py",
+"use": "@vercel/python"
+},
+{
+"src": "static/**/",
+"use": "@vercel/static"
+}
+],
+"routes": [
+{
+"src": "/static/(.)",
+"dest": "/static/$1"
+},
+{
+"src": "/(.*)",
+"dest": "manage.py"
+}
+]
+}
+
+.env.example
+
+SECRET_KEY=your-secret-key
+DEBUG=False
+DATABASE_URL=postgres://username:password@host:5432/social_media
+ALLOWED_HOSTS=localhost,127.0.0.1,.onrender.com,.vercel.app
