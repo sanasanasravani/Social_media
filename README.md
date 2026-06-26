@@ -1,5 +1,7 @@
 # Social Media
 
+LIVE LINK: https://social-media-app-alpha-three.vercel.app/?utm_source=chatgpt.com
+
 A modern social media platform designed for users to connect, share content, and engage with their community.
 
 ## 📋 Table of Contents
